@@ -1,0 +1,11 @@
+{
+  "Version": 1,
+  "Hash": "9qamcbUEn2DXaRejqNDUivNuVL+BGQTCOLE/ZtTrrC8=",
+  "Source": "Recruitment.WebAPI",
+  "BasePath": "_content/Recruitment.WebAPI",
+  "Mode": "Default",
+  "ManifestType": "Build",
+  "ReferencedProjectsConfiguration": [],
+  "DiscoveryPatterns": [],
+  "Assets": []
+}
