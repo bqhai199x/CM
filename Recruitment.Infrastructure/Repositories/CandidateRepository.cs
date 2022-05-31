@@ -24,19 +24,19 @@ namespace Recruitment.Infrastructure.Repositories
                     "Insert Into Candidate (PositionId, LevelId, FullName, Birthday, Address, Phone, Email, CVPath, IntroduceName, Status) " +
                     $"Values (@PositionId, @LevelId, @FullName, @BirthDay, @Address, @Phone, @Email, @CVPath, @IntroduceName, @Status)";
 
-                DynamicParameters parameters = new DynamicParameters();
-                parameters.Add("PositionId", candidate.Position.Id, DbType.Int32);
-                parameters.Add("LevelId", candidate.Level.Id, DbType.String);
-                parameters.Add("FullName", candidate.Name, DbType.String);
-                parameters.Add("BirthDay", candidate.Birthday, DbType.DateTime);
-                parameters.Add("Address", candidate.Address, DbType.String);
-                parameters.Add("Phone", candidate.Phone, DbType.String);
-                parameters.Add("Email", candidate.Email, DbType.String);
-                parameters.Add("CVPath", candidate.CVPath, DbType.String);
-                parameters.Add("IntroduceName", candidate.Introduce, DbType.String);
-                parameters.Add("Status", candidate.Status, DbType.Int32);
-
-                return connection.ExecuteAsync(sql, parameters);
+                return connection.ExecuteAsync(sql, new
+                {
+                    PositionId = candidate.Position.Id,
+                    LevelId = candidate.Level.Id,
+                    FullName = candidate.Name,
+                    Birthday = candidate.Birthday,
+                    Address = candidate.Address,
+                    Phone = candidate.Phone,
+                    Email = candidate.Email,
+                    CVPath = candidate.CVPath,
+                    IntroduceName = candidate.Introduce,
+                    Status = candidate.Status
+                });
             }
         }
 
