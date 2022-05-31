@@ -1,0 +1,11 @@
+Recruitment/.vs/
+Recruitment/Domain/bin/
+Recruitment/Domain/obj/
+Recruitment/Infrastructure/bin/
+Recruitment/Infrastructure/obj/
+Recruitment/WebAPI/bin/
+Recruitment/WebAPI/obj/
+Recruitment/Core/bin/
+Recruitment/Core/obj/
+*.log
+*.user
