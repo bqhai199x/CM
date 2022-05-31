@@ -44,12 +44,12 @@ namespace Recruitment.WebAPI.Controllers
         }
 
         [HttpPost("delete")]
-        public async Task<IActionResult> DeleteCandidate(int id)
+        public async Task<IActionResult> DeleteCandidate(List<int> idList)
         {
             try
             {
-                int result = await _unitOfWork.Candidate.DeleteAsync(id);
-                return Json(result > 0);
+                int result = await _unitOfWork.Candidate.DeleteManyAsync(idList);
+                return Json(result);
             }
             catch (Exception ex)
             {
@@ -64,6 +64,34 @@ namespace Recruitment.WebAPI.Controllers
             {
                 int result = await _unitOfWork.Candidate.AddAsync(candidate);
                 return Json(result > 0);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, ex.Message);
+            }
+        }
+
+        [HttpPost("update")]
+        public async Task<IActionResult> UpdateCandidate(Candidate candidate)
+        {
+            try
+            {
+                int result = await _unitOfWork.Candidate.UpdateAsync(candidate);
+                return Json(result > 0);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, ex.Message);
+            }
+        }
+
+        [HttpPost("search")]
+        public async Task<IActionResult> SearchCandidate(Candidate.Condition condition)
+        {
+            try
+            {
+                List<Candidate> candidateList = await _unitOfWork.Candidate.SearchAsync(condition);
+                return Json(candidateList);
             }
             catch (Exception ex)
             {

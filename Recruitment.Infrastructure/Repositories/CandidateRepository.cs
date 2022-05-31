@@ -16,7 +16,7 @@ namespace Recruitment.Infrastructure.Repositories
             _config = configuration;
         }
 
-        public Task<int> AddAsync(Candidate candidate)
+        public async Task<int> AddAsync(Candidate candidate)
         {
             using (var connection = new MySqlConnection(_config.GetConnectionString("SqlConnection")))
             {
@@ -24,7 +24,7 @@ namespace Recruitment.Infrastructure.Repositories
                     "Insert Into Candidate (PositionId, LevelId, FullName, Birthday, Address, Phone, Email, CVPath, IntroduceName, Status) " +
                     $"Values (@PositionId, @LevelId, @FullName, @BirthDay, @Address, @Phone, @Email, @CVPath, @IntroduceName, @Status)";
 
-                return connection.ExecuteAsync(sql, new
+                return await connection.ExecuteAsync(sql, new
                 {
                     PositionId = candidate.Position.Id,
                     LevelId = candidate.Level.Id,
@@ -42,13 +42,27 @@ namespace Recruitment.Infrastructure.Repositories
 
         public Task<int> DeleteAsync(int id)
         {
+            throw new NotImplementedException();
+        }
+
+        public Task<int> DeleteManyAsync(List<int> idList)
+        {
             using (var connection = new MySqlConnection(_config.GetConnectionString("SqlConnection")))
             {
                 string sql =
                     "Delete From Candidate " +
-                    $"Where CandidateId = {id}";
+                    $"Where CandidateId = @CandidateId";
 
-                return connection.ExecuteAsync(sql);
+                List<DynamicParameters> parameters = new List<DynamicParameters>();
+                DynamicParameters parameter = new DynamicParameters();
+                foreach (var item in idList)
+                {
+                    parameter = new();
+                    parameter.Add("@CandidateId", item, DbType.Int32);
+                    parameters.Add(parameter);
+                }
+
+                return connection.ExecuteAsync(sql, parameters);
             }
         }
 
@@ -99,9 +113,92 @@ namespace Recruitment.Infrastructure.Repositories
             }
         }
 
-        public Task<int> UpdateAsync(Candidate entity)
+        public async Task<List<Candidate>> SearchAsync(Candidate.Condition condition)
         {
-            throw new NotImplementedException();
+            using (var connection = new MySqlConnection(_config.GetConnectionString("SqlConnection")))
+            {
+                string sql =
+                    "Select Candidate.CandidateId As Id, Candidate.FullName As Name, Candidate.Birthday, " +
+                        "Candidate.Address, Candidate.Phone, Candidate.Email, Candidate.CVPath, Candidate.IntroduceName As Introduce, Candidate.Status,  " +
+                        "Level.LevelId As Id, Level.LevelName As Name, Position.PositionId As Id, Position.PositionName As Name " +
+                    "From Candidate " +
+                    "Inner Join Level On Candidate.LevelId = Level.LevelId " +
+                    "Inner Join Position On Candidate.PositionId = Position.PositionId " +
+                    "Where 1 = 1 ";
+
+                if (condition.LevelId != 0)
+                {
+                    sql += "And Candidate.LevelId = @LevelId ";
+                }
+                if (condition.PositionId != 0)
+                {
+                    sql += "And Candidate.PositionId = @PositionId ";
+                }
+                if (!string.IsNullOrEmpty(condition.Name))
+                {
+                    sql += "And Candidate.FullName Like CONCAT(@Name, '%') ";
+                }
+                if (!string.IsNullOrEmpty(condition.Introduce))
+                {
+                    sql += "And Candidate.IntroduceName = @Introduce ";
+                }
+                if (condition.Status != null)
+                {
+                    sql += "And Candidate.Status = @Status ";
+                }
+
+                var candidateList = await connection.QueryAsync<Candidate, Level, Position, Candidate>(sql, (can, lv, pos) =>
+                {
+                    can.Level = lv;
+                    can.Position = pos;
+                    return can;
+                }, splitOn: "Id, Id", param: new
+                {
+                    LevelId = condition.LevelId,
+                    PositionId = condition.PositionId,
+                    Name = condition.Name,
+                    Introduce = condition.Introduce,
+                    Status = condition.Status
+                });
+
+                return candidateList.ToList();
+            }
+        }
+
+        public Task<int> UpdateAsync(Candidate candidate)
+        {
+            using (var connection = new MySqlConnection(_config.GetConnectionString("SqlConnection")))
+            {
+                string sql =
+                    "Update Candidate " +
+                    "Set " +
+                        "PositionId = @PositionId, " +
+                        "LevelId = @LevelId, " +
+                        "FullName = @FullName, " +
+                        "Birthday = @Birthday, " +
+                        "Address = @Address, " +
+                        "Phone = @Phone, " +
+                        "Email = @Email, " +
+                        "CVPath = @CVPath, " +
+                        "IntroduceName = @IntroduceName, " +
+                        "Status = @Status " +
+                    "Where CandidateId = @CandidateId";
+
+                return connection.ExecuteAsync(sql, new
+                {
+                    CandidateId = candidate.Id,
+                    PositionId = candidate.Position.Id,
+                    LevelId = candidate.Level.Id,
+                    FullName = candidate.Name,
+                    Birthday = candidate.Birthday,
+                    Address = candidate.Address,
+                    Phone = candidate.Phone,
+                    Email = candidate.Email,
+                    CVPath = candidate.CVPath,
+                    IntroduceName = candidate.Introduce,
+                    Status = candidate.Status
+                });
+            }
         }
     }
 }

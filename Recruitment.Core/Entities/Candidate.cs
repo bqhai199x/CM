@@ -28,5 +28,18 @@
         {
 
         }
+
+        public class Condition
+        {
+            public int LevelId { get; set; } = 0;
+
+            public int PositionId { get; set; } = 0;
+
+            public string Name { get; set; } = string.Empty;
+
+            public string Introduce { get; set; } = string.Empty;
+
+            public StatusValue? Status { get; set; } = null;
+        }
     }
 }
