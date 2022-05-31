@@ -1,11 +1,9 @@
 Recruitment/.vs/
-Recruitment/Domain/bin/
-Recruitment/Domain/obj/
-Recruitment/Infrastructure/bin/
-Recruitment/Infrastructure/obj/
-Recruitment/WebAPI/bin/
-Recruitment/WebAPI/obj/
-Recruitment/Core/bin/
-Recruitment/Core/obj/
+Recruitment/Recruitment.Infrastructure/bin/
+Recruitment/Recruitment.Infrastructure/obj/
+Recruitment/Recruitment.WebAPI/bin/
+Recruitment/Recruitment.WebAPI/obj/
+Recruitment/Recruitment.Core/bin/
+Recruitment/Recruitment.Core/obj/
 *.log
 *.user
