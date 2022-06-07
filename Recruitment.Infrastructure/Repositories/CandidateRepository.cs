@@ -136,7 +136,7 @@ namespace Recruitment.Infrastructure.Repositories
                 }
                 if (!string.IsNullOrEmpty(condition.Name))
                 {
-                    sql += "And Candidate.FullName Like CONCAT(@Name, '%') ";
+                    sql += "And Candidate.FullName Like CONCAT('%', @Name, '%') ";
                 }
                 if (!string.IsNullOrEmpty(condition.Introduce))
                 {
